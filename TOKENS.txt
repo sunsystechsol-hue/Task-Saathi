@@ -1,0 +1,89 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    COPY-PASTE TOKENS FOR F12 CONSOLE
+═══════════════════════════════════════════════════════════════════════════════
+
+📌 STEP 1: Go to http://localhost:3000
+📌 STEP 2: Press F12 to open DevTools
+📌 STEP 3: Click on Console tab
+📌 STEP 4: Copy & Paste ONE of the blocks below
+📌 STEP 5: Refresh page with F5
+
+═══════════════════════════════════════════════════════════════════════════════
+👨‍💼 EMPLOYER LOGIN TOKEN
+═══════════════════════════════════════════════════════════════════════════════
+Email: employer@test.com
+Password: testpass123
+
+PASTE THIS (all at once):
+
+localStorage.setItem('access_token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYyMTc3MTU3LCJpYXQiOjE3NjIwOTA3NTcsImp0aSI6Ijc2OGNjZGU4YjJmNTQwODc4MzhiNmNkNjI3ZGFkNzBkIiwidXNlcl9pZCI6ImJlZTMwNjA2LTI4MjctNDQwMS05MThiLTI1MTk5ZWZmMTM5MCJ9.p3S6IWqzw0StWinkzZ9jcbL2Xv0Q7oWdyRSowaoKGvM');localStorage.setItem('user_role','EMPLOYER');localStorage.setItem('loggedIn','true');localStorage.setItem('user',JSON.stringify({"id":"bee30606-2827-4401-918b-25199eff1390","email":"employer@test.com","firstName":"John","lastName":"Employer","userRole":"EMPLOYER","company":{"id":"test-company","name":"Test Company Ltd."}}));location.reload();
+
+═══════════════════════════════════════════════════════════════════════════════
+👩‍💻 EMPLOYEE LOGIN TOKEN
+═══════════════════════════════════════════════════════════════════════════════
+Email: employee@test.com
+Password: testpass123
+
+PASTE THIS (all at once):
+
+localStorage.setItem('access_token','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYyMTc3MTU3LCJpYXQiOjE3NjIwOTA3NTcsImp0aSI6ImQ2ZmJiNDgzNDIyOTRmYTBiZjAyZThjOGNhNDEwODRmIiwidXNlcl9pZCI6ImI4NGYyZTRlLThkYzItNDIwNC05Yzk5LWIzNTUyMTkwOWY2MiJ9.3_Z5ZyqwUpusJO8Kp6yhmXRAh_6iGUd4KVEjsgDEAe4');localStorage.setItem('user_role','EMPLOYEE');localStorage.setItem('loggedIn','true');localStorage.setItem('user',JSON.stringify({"id":"b84f2e4e-8dc2-4204-9c99-b35521909f62","email":"employee@test.com","firstName":"Jane","lastName":"Employee","userRole":"EMPLOYEE"}));location.reload();
+
+═══════════════════════════════════════════════════════════════════════════════
+🔌 JUST THE ACCESS TOKENS (if you need them separately)
+═══════════════════════════════════════════════════════════════════════════════
+
+EMPLOYER Token:
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYyMTc3MTU3LCJpYXQiOjE3NjIwOTA3NTcsImp0aSI6Ijc2OGNjZGU4YjJmNTQwODc4MzhiNmNkNjI3ZGFkNzBkIiwidXNlcl9pZCI6ImJlZTMwNjA2LTI4MjctNDQwMS05MThiLTI1MTk5ZWZmMTM5MCJ9.p3S6IWqzw0StWinkzZ9jcbL2Xv0Q7oWdyRSowaoKGvM
+
+EMPLOYEE Token:
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYyMTc3MTU3LCJpYXQiOjE3NjIwOTA3NTcsImp0aSI6ImQ2ZmJiNDgzNDIyOTRmYTBiZjAyZThjOGNhNDEwODRmIiwidXNlcl9pZCI6ImI4NGYyZTRlLThkYzItNDIwNC05Yzk5LWIzNTUyMTkwOWY2MiJ9.3_Z5ZyqwUpusJO8Kp6yhmXRAh_6iGUd4KVEjsgDEAe4
+
+═══════════════════════════════════════════════════════════════════════════════
+📞 TEST COMMANDS IN CONSOLE
+═══════════════════════════════════════════════════════════════════════════════
+
+After logging in, try these in console (F12):
+
+// Check who you are
+console.log(getUserData())
+
+// Get your tasks
+getTasks().then(r => console.log(r))
+
+// Get tasks assigned to you (Employee)
+getMyTasks().then(r => console.log(r))
+
+// Get company tasks (Employer)
+getCompanyTasks().then(r => console.log(r))
+
+// Get company info (Employer)
+getCompanyDetails().then(r => console.log(r))
+
+// Get employees (Employer)
+getCompanyEmployees().then(r => console.log(r))
+
+// Logout
+logout()
+
+═══════════════════════════════════════════════════════════════════════════════
+🔗 USEFUL LINKS
+═══════════════════════════════════════════════════════════════════════════════
+
+Frontend:        http://localhost:3000
+Backend API:     http://localhost:8000
+API Swagger:     http://localhost:8000/swagger/
+API ReDoc:       http://localhost:8000/redoc/
+Admin Panel:     http://localhost:8000/admin/
+
+═══════════════════════════════════════════════════════════════════════════════
+💡 TIPS
+═══════════════════════════════════════════════════════════════════════════════
+
+✓ Tokens expire in 5 minutes - regenerate with: docker exec -it tasksaathi-backend python generate_test_tokens.py
+✓ Frontend runs on port 3000 via Python HTTP server
+✓ Backend runs on port 8000 in Docker
+✓ Database is PostgreSQL running in Docker
+✓ All data persists in the database
+✓ Check browser console (F12) for API responses and errors
+
+═══════════════════════════════════════════════════════════════════════════════

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Saathi - Employer Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- jsPDF for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">Employer Dashboard</div>
+      <ul class="nav-links">
+        <li><a href="employer-dashboard.html">Home</a></li>
+        <li><a href="#">Employees</a></li>
+        <li><a href="#">Reports</a></li>
+        <li><a href="index.html">Logout</a></li>
+        <li><button id="themeToggle" class="theme-btn">🌙</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Dashboard Content -->
+  <section class="dashboard">
+    <h1>Welcome Employer 👨‍💼</h1>
+    <p>Manage your team, assign tasks, and generate reports.</p>
+
+    <!-- Employee Management -->
+    <div class="task-section">
+      <h2>Manage Employees</h2>
+      <input type="text" id="empName" placeholder="Enter Employee Name">
+      <input type="email" id="empEmail" placeholder="Enter Employee Email">
+      <select id="empRole">
+        <option value="Developer">Developer</option>
+        <option value="Designer">Designer</option>
+        <option value="Tester">Tester</option>
+        <option value="Manager">Manager</option>
+      </select>
+      <button class="btn" onclick="addEmployee()">➕ Add Employee</button>
+
+      <ul id="employeeList"></ul>
+    </div>
+
+    <!-- Task Assignment -->
+    <div class="task-section">
+      <h2>Assign Task</h2>
+      <input type="text" id="employeeName" placeholder="Enter Employee Name">
+      <input type="text" id="taskInput" placeholder="Enter Task">
+      <input type="date" id="taskDeadline">
+      <select id="taskPriority">
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+      </select>
+      <button class="btn" onclick="assignTask()">➕ Add Task</button>
+      <button class="btn" onclick="exportPDF()">📄 Export to PDF</button>
+    </div>
+
+    <!-- Task List -->
+    <div class="task-section">
+      <h2>Assigned Tasks</h2>
+      <ul id="taskList"></ul>
+    </div>
+  </section>
+
+  <!-- Scripts -->
+  <script>
+    let employees = JSON.parse(localStorage.getItem("employees")) || [];
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    /* ===== Employee Functions ===== */
+    function renderEmployees() {
+      const employeeList = document.getElementById("employeeList");
+      employeeList.innerHTML = "";
+
+      employees.forEach((emp, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <div>
+            <strong>${emp.name}</strong> (${emp.role}) <br>
+            <small>${emp.email}</small>
+          </div>
+          <button onclick="deleteEmployee(${index})">❌ Remove</button>
+        `;
+        employeeList.appendChild(li);
+      });
+    }
+
+    function addEmployee() {
+      const name = document.getElementById("empName").value.trim();
+      const email = document.getElementById("empEmail").value.trim();
+      const role = document.getElementById("empRole").value;
+
+      if (name === "" || email === "") return;
+
+      employees.push({ name, email, role });
+      localStorage.setItem("employees", JSON.stringify(employees));
+
+      document.getElementById("empName").value = "";
+      document.getElementById("empEmail").value = "";
+      document.getElementById("empRole").value = "Developer";
+
+      renderEmployees();
+    }
+
+    function deleteEmployee(index) {
+      employees.splice(index, 1);
+      localStorage.setItem("employees", JSON.stringify(employees));
+      renderEmployees();
+    }
+
+    /* ===== Task Functions ===== */
+    function renderTasks() {
+      const taskList = document.getElementById("taskList");
+      taskList.innerHTML = "";
+
+      tasks.forEach((task, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <div>
+            <strong>${task.employee}</strong> : ${task.name} 
+            <span class="priority ${task.priority}">${task.priority}</span>
+            <span class="status ${task.status}">(${task.status})</span>
+            <div><small>Deadline: ${task.deadline}</small></div>
+          </div>
+          <div>
+            <button onclick="toggleStatus(${index})">✅ Toggle</button>
+            <button onclick="deleteTask(${index})">❌ Delete</button>
+          </div>
+        `;
+        taskList.appendChild(li);
+      });
+    }
+
+    function assignTask() {
+      const emp = document.getElementById("employeeName").value.trim();
+      const task = document.getElementById("taskInput").value.trim();
+      const deadline = document.getElementById("taskDeadline").value;
+      const priority = document.getElementById("taskPriority").value;
+
+      if (emp === "" || task === "") return;
+
+      tasks.push({ 
+        employee: emp, 
+        name: task, 
+        deadline: deadline || "Not set", 
+        priority: priority, 
+        status: "Pending" 
+      });
+      
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+
+      document.getElementById("employeeName").value = "";
+      document.getElementById("taskInput").value = "";
+      document.getElementById("taskDeadline").value = "";
+      document.getElementById("taskPriority").value = "Low";
+
+      renderTasks();
+    }
+
+    function toggleStatus(index) {
+      tasks[index].status = tasks[index].status === "Pending" ? "Completed" : "Pending";
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      renderTasks();
+    }
+
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      renderTasks();
+    }
+
+    async function exportPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFontSize(16);
+      doc.text("TaskSaathi - Task Report", 20, 20);
+
+      doc.setFontSize(12);
+      let y = 40;
+      tasks.forEach((task, i) => {
+        doc.text(
+          `${i + 1}. Employee: ${task.employee} | Task: ${task.name} | Status: ${task.status} | Priority: ${task.priority} | Deadline: ${task.deadline}`,
+          20,
+          y
+        );
+        y += 10;
+      });
+
+      doc.save("TaskSaathi_Report.pdf");
+    }
+
+    /* ===== Theme Toggle ===== */
+    const themeToggle = document.getElementById("themeToggle");
+    const body = document.body;
+
+    if (localStorage.getItem("theme") === "dark") {
+      body.classList.add("dark");
+      themeToggle.textContent = "☀️";
+    }
+
+    themeToggle.addEventListener("click", () => {
+      body.classList.toggle("dark");
+      if (body.classList.contains("dark")) {
+        localStorage.setItem("theme", "dark");
+        themeToggle.textContent = "☀️";
+      } else {
+        localStorage.setItem("theme", "light");
+        themeToggle.textContent = "🌙";
+      }
+    });
+
+    /* ===== Initial Load ===== */
+    renderEmployees();
+    renderTasks();
+  </script>
+
+</body>
+</html>

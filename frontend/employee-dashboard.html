@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Saathi - Employee Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">Employee Dashboard</div>
+      <ul class="nav-links">
+        <li><a href="employee-dashboard.html">Home</a></li>
+        <li><a href="#">My Profile</a></li>
+        <li><a href="#">Tasks</a></li>
+        <li><a href="index.html">Logout</a></li>
+        <li><button id="themeToggle" class="theme-btn">🌙</button></li>
+
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Dashboard Content -->
+  <section class="dashboard">
+    <h1>Welcome Employee 👩‍💻</h1>
+    <p>Here are your assigned tasks:</p>
+
+    <!-- Task List -->
+    <div class="task-section">
+      <h2>My Tasks</h2>
+      <ul id="taskList"></ul>
+    </div>
+  </section>
+
+  <script>
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    function renderTasks() {
+      const taskList = document.getElementById("taskList");
+      taskList.innerHTML = "";
+
+      tasks.forEach((task, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <div>
+            <strong>${task.employee}</strong> : ${task.name}
+            <span class="status ${task.status}">(${task.status})</span>
+          </div>
+        `;
+        taskList.appendChild(li);
+      });
+    }
+
+    // Show tasks
+    renderTasks();
+  </script>
+<script>
+  const themeToggle = document.getElementById("themeToggle");
+  const body = document.body;
+
+  // Load saved theme
+  if (localStorage.getItem("theme") === "dark") {
+    body.classList.add("dark");
+    if (themeToggle) themeToggle.textContent = "☀️";
+  }
+
+  if (themeToggle) {
+    themeToggle.addEventListener("click", () => {
+      body.classList.toggle("dark");
+      if (body.classList.contains("dark")) {
+        localStorage.setItem("theme", "dark");
+        themeToggle.textContent = "☀️";
+      } else {
+        localStorage.setItem("theme", "light");
+        themeToggle.textContent = "🌙";
+      }
+    });
+  }
+</script>
+
+</body>
+</html>

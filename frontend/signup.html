@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Task Saathi - Sign Up</title>
+  <style>
+    /* ----- General Reset ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #e0f0ff, #c2e0ff);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;   /* Align items to top instead of center */
+      min-height: 100vh;         /* Allow scrolling if needed */
+      padding-top: 40px;         /* Add top space so it's not cut off */
+    }
+
+    .login-container {
+      background: #fff;
+      width: 420px;
+      padding: 35px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      text-align: center;
+      animation: fadeIn 0.6s ease-in-out;
+      margin-bottom: 40px;       /* Add some bottom space for mobile scrolling */
+    }
+
+    .login-container h2 {
+      margin-bottom: 20px;
+      font-size: 26px;
+      color: #0D47A1;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+
+    label {
+      margin-bottom: 5px;
+      font-size: 14px;
+      color: #0D47A1;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="file"],
+    input[type="tel"],
+    select {
+      padding: 12px 14px;
+      margin-bottom: 15px;
+      border: 1px solid #0D47A1;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      width: 100%;
+      background-color: #fff;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #1976D2;
+      box-shadow: 0 0 0 3px rgba(25,118,210,0.2);
+    }
+
+    .btn {
+      padding: 12px;
+      background-color: #0D47A1;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin-bottom: 10px;
+    }
+
+    .btn:hover {
+      background-color: #1976D2;
+    }
+
+    .btn-google {
+      padding: 12px;
+      background-color: #DB4437;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin-bottom: 15px;
+    }
+
+    .btn-google:hover {
+      background-color: #C23321;
+    }
+
+    .links {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .links a {
+      color: #0D47A1;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .links a:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(-10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <h2>Create Your Account</h2>
+    <form>
+      <label for="company-name">Company Name :</label>
+      <input type="text" id="company-name" placeholder="Company Name" required>
+
+      <label for="username">Username :</label>
+      <input type="text" id="username" placeholder="Enter Username" required>
+
+      <label for="email">Email :</label>
+      <input type="email" id="email" placeholder="Enter Email" required>
+
+
+
+      <label for="contact">Number :</label>
+      <input type="tel" id="contact Number" placeholder="Enter contact Number" required>
+
+      <label for="document">Valid Reqistration Document :</label>
+      <input type="file" id="document" accept=".pdf,.jpg,.jpeg,.png" required>
+
+      <label for="password">Password :</label>
+      <input type="password" id="password" placeholder="Enter Password" required>
+
+
+      <label for="role">Role :</label>
+      <select id="role" required>
+        <option value="" disabled selected>Select your role</option>
+        <option value="employer">Employer</option>
+        <option value="employee">Employee</option>
+      </select>
+
+      <button type="submit" class="btn">Sign Up</button>
+      <button type="button" class="btn-google">Sign Up with Google</button>
+    </form>
+
+    <div class="links">
+      <span>Already have an account? <a href="login.html">Login</a></span>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    document.querySelector('form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      // Get form values
+      const userData = {
+        company_name: document.getElementById('company-name').value.trim(),
+        username: document.getElementById('username').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        phoneNumber: document.getElementById('contact Number').value.trim(),
+        password: document.getElementById('password').value.trim(),
+        role: document.getElementById('role').value
+      };
+      
+      // Call the API register function
+      const result = await register(userData);
+      
+      if (result.success) {
+        alert('Registration successful!');
+        // Redirect to dashboard (user is automatically logged in by our API)
+        window.location.href = 'dashboard.html';
+      } else {
+        alert('Registration failed: ' + result.error);
+      }
+    });
+  </script>
+</body>
+</html>

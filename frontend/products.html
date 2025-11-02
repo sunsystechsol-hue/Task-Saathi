@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Products - Task Saathi</title>
+  <style>
+    /* General Styling */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #f0f8ff, #e6f2ff);
+      color: #333;
+      min-height: 100vh;
+    }
+
+    /* Header Section */
+    header {
+      background-color: #0056b3;
+      color: #fff;
+      padding: 50px 20px;
+      text-align: center;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 3rem;
+      font-weight: bold;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    }
+
+    header p {
+      font-size: 1.3rem;
+      margin-top: 12px;
+      opacity: 0.9;
+    }
+
+    /* Products Container */
+    .products-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 30px;
+      padding: 60px 20px;
+    }
+
+    /* Product Card */
+    .product-card {
+      background-color: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      padding: 20px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .product-card img {
+      width: 80%;
+      height: 180px;
+      object-fit: contain; /* Keeps the whole image visible */
+      border-radius: 15px;
+      margin-bottom: 15px;
+      background: #f7f9fc; /* subtle card background behind image */
+      padding: 10px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .product-card:hover img {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .product-card h3 {
+      margin: 15px 0 10px;
+      font-size: 1.8rem;
+      color: #0056b3;
+    }
+
+    .product-card p {
+      font-size: 1rem;
+      margin-bottom: 18px;
+      color: #555;
+      line-height: 1.4;
+    }
+
+    .product-card a {
+      display: inline-block;
+      padding: 12px 28px;
+      background: linear-gradient(45deg, #ff512f, #dd2476);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 1rem;
+      transition: all 0.3s;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .product-card a:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+      background: linear-gradient(45deg, #dd2476, #ff512f);
+    }
+
+    /* Hover Effect */
+    .product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.18);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .product-card {
+        width: 45%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .product-card {
+        width: 90%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header h1 {
+        font-size: 2.2rem;
+      }
+
+      header p {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Our Products</h1>
+    <p>Explore all our innovative solutions in one place</p>
+  </header>
+
+  <section class="products-container">
+    <!-- Product Card 1 -->
+    <div class="product-card">
+      <img src="NAUKRISAATHI-Logo.jpg" alt="Naukri Saathi">
+      <h3>Naukri Saathi</h3>
+      <p>Your trusted job search companion to land your dream career.</p>
+      <a href="http://naukrisaathi.com">Learn More</a>
+    </div>
+
+    <!-- Product Card 2 -->
+    <div class="product-card">
+      <img src="IMG-20250814-WA0014.jpg" alt="Chalo Saathi">
+      <h3>Chalo Saathi</h3>
+      <p>Your travel and commute buddy to make journeys easier.</p>
+      <a href="http://chalosaathi.com">Learn More</a>
+    </div>
+
+    <!-- Product Card 3 -->
+    <div class="product-card">
+      <img src="internsaathi logo jpg-02.jpg" alt="Intern Saathi">
+      <h3>Intern Saathi</h3>
+      <p>Your partner in finding the best internships for your growth.</p>
+      <a href="http://internsaathi.com">Learn More</a>
+    </div>
+
+    <!-- Product Card 4 -->
+    <div class="product-card">
+      <img src=" IMG-20250724-WA0006.jpg " alt="Sunsys Global">
+      <h3>Sunsys Global</h3>
+      <p>Innovative technology solutions for businesses worldwide.</p>
+      <a href=" http://www.sunsysglobal.com ">Learn More</a>
+    </div>
+  </section>
+</body>
+</html>

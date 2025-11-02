@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Storage & Test Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .danger {
+            background: #dc3545;
+        }
+        .danger:hover {
+            background: #c82333;
+        }
+        .success {
+            background: #28a745;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>🧹 Storage Cleanup & Testing</h2>
+        <button onclick="clearStorage()" class="danger">Clear All localStorage</button>
+        <button onclick="showStorage()">Show Current Storage</button>
+        <div id="storage-output"></div>
+    </div>
+
+    <div class="card">
+        <h2>🔐 Test Login</h2>
+        <form onsubmit="testLogin(event)">
+            <label>Email:</label>
+            <input type="email" id="email" value="employer@test.com" required>
+            
+            <label>Password:</label>
+            <input type="password" id="password" value="testpass123" required>
+            
+            <button type="submit" class="success">Test Login</button>
+        </form>
+        <div id="login-output"></div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        function clearStorage() {
+            localStorage.clear();
+            document.getElementById('storage-output').innerHTML = 
+                '<pre style="color: green;">✓ localStorage cleared successfully!</pre>';
+            showStorage();
+        }
+
+        function showStorage() {
+            const output = document.getElementById('storage-output');
+            const items = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                items[key] = localStorage.getItem(key);
+            }
+            
+            const html = '<h3>Current localStorage:</h3><pre>' + 
+                        JSON.stringify(items, null, 2) + '</pre>';
+            output.innerHTML = html;
+        }
+
+        async function testLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const output = document.getElementById('login-output');
+            
+            output.innerHTML = '<p>⏳ Logging in...</p>';
+            
+            try {
+                const result = await login(email, password);
+                
+                if (result.success) {
+                    output.innerHTML = `
+                        <h3 style="color: green;">✓ Login Successful!</h3>
+                        <h4>Response Data:</h4>
+                        <pre>${JSON.stringify(result.data, null, 2)}</pre>
+                        <h4>Stored in localStorage:</h4>
+                        <pre>access_token: ${localStorage.getItem('access_token')}
+refresh_token: ${localStorage.getItem('refresh_token')}
+user_role: ${localStorage.getItem('user_role')}
+user_id: ${localStorage.getItem('user_id')}
+user: ${localStorage.getItem('user')}</pre>
+                        <button onclick="location.href='employer-dashboard.html'" class="success">
+                            Go to Employer Dashboard
+                        </button>
+                        <button onclick="location.href='employee-dashboard.html'" class="success">
+                            Go to Employee Dashboard
+                        </button>
+                    `;
+                } else {
+                    output.innerHTML = `
+                        <h3 style="color: red;">✗ Login Failed</h3>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                output.innerHTML = `
+                    <h3 style="color: red;">✗ Error</h3>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+
+        // Show storage on load
+        showStorage();
+    </script>
+</body>
+</html>

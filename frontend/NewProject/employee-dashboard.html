@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Saathi - Employee Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">Employee Dashboard</div>
+      <ul class="nav-links">
+        <li><a href="employee-dashboard.html">Home</a></li>
+        <li><a href="#">My Profile</a></li>
+        <li><a href="#">Tasks</a></li>
+        <li><a href="index.html">Logout</a></li>
+        <li><button id="themeToggle" class="theme-btn">🌙</button></li>
+
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Dashboard Content -->
+  <section class="dashboard">
+    <h1>Welcome Employee 👩‍💻</h1>
+    <p>Here are your assigned tasks:</p>
+
+    <!-- Task List -->
+    <div class="task-section">
+      <h2>My Tasks</h2>
+      <ul id="taskList"></ul>
+    </div>
+  </section>
+
+  <script src="js/api.js?v=3"></script>
+  <script>
+    // FORCE CHECK - print everything first
+    console.log('=== EMPLOYEE DASHBOARD ACCESS CHECK ===');
+    console.log('All localStorage:', {...localStorage});
+    
+    // Check authentication
+    if (!isAuthenticated()) {
+      console.log('Not authenticated, redirecting to login');
+      window.location.href = 'login.html';
+    }
+
+    // Check user role - try multiple ways to get it
+    let userRole = localStorage.getItem('user_role');
+    console.log('user_role from localStorage:', userRole);
+    
+    // If not in user_role, check the user object
+    if (!userRole) {
+      const userStr = localStorage.getItem('user');
+      console.log('user string from localStorage:', userStr);
+      if (userStr) {
+        try {
+          const userData = JSON.parse(userStr);
+          console.log('Parsed user data:', userData);
+          userRole = userData.userRole;
+          console.log('Extracted userRole:', userRole);
+          // Update localStorage for next time
+          if (userRole) {
+            localStorage.setItem('user_role', userRole);
+          }
+        } catch (e) {
+          console.error('Error parsing user data:', e);
+        }
+      }
+    }
+    
+    console.log('Final user role:', userRole);
+    
+    if (userRole !== 'EMPLOYEE') {
+      console.error('Access denied. Expected EMPLOYEE, got:', userRole);
+      alert('Access denied. Employee role required. Your role: ' + (userRole || 'none'));
+      window.location.href = 'login.html';
+    }
+
+    let tasks = [];
+
+    async function loadTasks() {
+      const result = await getMyTasks();
+      if (result.success) {
+        tasks = result.data;
+        renderTasks();
+      } else {
+        console.error('Failed to load tasks:', result.error);
+        alert('Failed to load tasks: ' + result.error);
+      }
+    }
+
+    function renderTasks() {
+      const taskList = document.getElementById("taskList");
+      taskList.innerHTML = "";
+
+      if (tasks.length === 0) {
+        taskList.innerHTML = '<li><div>No tasks assigned yet.</div></li>';
+        return;
+      }
+
+      tasks.forEach((task) => {
+        const li = document.createElement("li");
+        const dueDate = task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No deadline';
+        li.innerHTML = `
+          <div>
+            <strong>${task.title}</strong>
+            <p>${task.description || ''}</p>
+            <span class="priority ${task.priority}">${task.priority}</span>
+            <span class="status ${task.status}">(${task.status})</span>
+            <div><small>Due: ${dueDate}</small></div>
+            ${task.companyName ? `<div><small>Company: ${task.companyName}</small></div>` : ''}
+          </div>
+        `;
+        taskList.appendChild(li);
+      });
+    }
+
+    // Load tasks on page load
+    loadTasks();
+
+    // Refresh tasks every 30 seconds
+    setInterval(loadTasks, 30000);
+  </script>
+<script>
+  const themeToggle = document.getElementById("themeToggle");
+  const body = document.body;
+
+  // Load saved theme
+  if (localStorage.getItem("theme") === "dark") {
+    body.classList.add("dark");
+    if (themeToggle) themeToggle.textContent = "☀️";
+  }
+
+  if (themeToggle) {
+    themeToggle.addEventListener("click", () => {
+      body.classList.toggle("dark");
+      if (body.classList.contains("dark")) {
+        localStorage.setItem("theme", "dark");
+        themeToggle.textContent = "☀️";
+      } else {
+        localStorage.setItem("theme", "light");
+        themeToggle.textContent = "🌙";
+      }
+    });
+  }
+</script>
+
+</body>
+</html>

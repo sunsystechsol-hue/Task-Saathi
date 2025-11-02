@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Saathi - Employer Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- jsPDF for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">Employer Dashboard</div>
+      <ul class="nav-links">
+        <li><a href="employer-dashboard.html">Home</a></li>
+        <li><a href="#">Employees</a></li>
+        <li><a href="#">Reports</a></li>
+        <li><a href="index.html">Logout</a></li>
+        <li><button id="themeToggle" class="theme-btn">🌙</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Dashboard Content -->
+  <section class="dashboard">
+    <h1>Welcome Employer 👨‍💼</h1>
+    <p>Manage your team, assign tasks, and generate reports.</p>
+
+    <!-- Employee Management -->
+    <div class="task-section">
+      <h2>Manage Employees</h2>
+      <input type="text" id="empName" placeholder="Enter Employee Name">
+      <input type="email" id="empEmail" placeholder="Enter Employee Email">
+      <select id="empRole">
+        <option value="Developer">Developer</option>
+        <option value="Designer">Designer</option>
+        <option value="Tester">Tester</option>
+        <option value="Manager">Manager</option>
+      </select>
+      <button class="btn" onclick="addEmployee()">➕ Add Employee</button>
+
+      <ul id="employeeList"></ul>
+    </div>
+
+    <!-- Task Assignment -->
+    <div class="task-section">
+      <h2>Assign Task</h2>
+      <input type="text" id="employeeName" placeholder="Enter Employee Name">
+      <input type="text" id="taskInput" placeholder="Enter Task">
+      <input type="date" id="taskDeadline">
+      <select id="taskPriority">
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+      </select>
+      <button class="btn" onclick="assignTask()">➕ Add Task</button>
+      <button class="btn" onclick="exportPDF()">📄 Export to PDF</button>
+    </div>
+
+    <!-- Task List -->
+    <div class="task-section">
+      <h2>Assigned Tasks</h2>
+      <ul id="taskList"></ul>
+    </div>
+  </section>
+
+  <!-- Scripts -->
+  <script src="js/api.js?v=3"></script>
+  <script>
+    // FORCE CHECK - print everything first
+    console.log('=== EMPLOYER DASHBOARD ACCESS CHECK ===');
+    console.log('All localStorage:', {...localStorage});
+    
+    // Check authentication
+    if (!isAuthenticated()) {
+      console.log('Not authenticated, redirecting to login');
+      window.location.href = 'login.html';
+    }
+
+    // Check user role - try multiple ways to get it
+    let userRole = localStorage.getItem('user_role');
+    console.log('user_role from localStorage:', userRole);
+    
+    // If not in user_role, check the user object
+    if (!userRole) {
+      const userStr = localStorage.getItem('user');
+      console.log('user string from localStorage:', userStr);
+      if (userStr) {
+        try {
+          const userData = JSON.parse(userStr);
+          console.log('Parsed user data:', userData);
+          userRole = userData.userRole;
+          console.log('Extracted userRole:', userRole);
+          // Update localStorage for next time
+          if (userRole) {
+            localStorage.setItem('user_role', userRole);
+          }
+        } catch (e) {
+          console.error('Error parsing user data:', e);
+        }
+      }
+    }
+    
+    console.log('Final user role:', userRole);
+    
+    if (userRole !== 'EMPLOYER') {
+      console.error('Access denied. Expected EMPLOYER, got:', userRole);
+      alert('Access denied. Employer role required. Your role: ' + (userRole || 'none'));
+      window.location.href = 'login.html';
+    }
+
+    let employees = [];
+    let tasks = [];
+
+    /* ===== Employee Functions ===== */
+    async function loadEmployees() {
+      const result = await getCompanyEmployees();
+      if (result.success) {
+        employees = result.data;
+        renderEmployees();
+      } else {
+        console.error('Failed to load employees:', result.error);
+      }
+    }
+
+    function renderEmployees() {
+      const employeeList = document.getElementById("employeeList");
+      employeeList.innerHTML = "";
+
+      if (employees.length === 0) {
+        employeeList.innerHTML = '<li><div>No employees found.</div></li>';
+        return;
+      }
+
+      employees.forEach((emp) => {
+        const li = document.createElement("li");
+        const fullName = `${emp.firstName || ''} ${emp.lastName || ''}`.trim() || 'N/A';
+        li.innerHTML = `
+          <div>
+            <strong>${fullName}</strong><br>
+            <small>${emp.email}</small><br>
+            <small>Phone: ${emp.phoneNumber || 'N/A'}</small>
+          </div>
+        `;
+        employeeList.appendChild(li);
+      });
+    }
+
+    function addEmployee() {
+      alert('Employee registration must be done through the signup page. Share the signup link with your employees.');
+    }
+
+    function deleteEmployee(index) {
+      alert('Employee management from this interface is not yet implemented. Please contact support.');
+    }
+
+    /* ===== Task Functions ===== */
+    async function loadTasks() {
+      const result = await getCompanyTasks();
+      if (result.success) {
+        tasks = result.data;
+        renderTasks();
+      } else {
+        console.error('Failed to load tasks:', result.error);
+      }
+    }
+
+    function renderTasks() {
+      const taskList = document.getElementById("taskList");
+      taskList.innerHTML = "";
+
+      if (tasks.length === 0) {
+        taskList.innerHTML = '<li><div>No tasks created yet.</div></li>';
+        return;
+      }
+
+      tasks.forEach((task) => {
+        const li = document.createElement("li");
+        const dueDate = task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'Not set';
+        li.innerHTML = `
+          <div>
+            <strong>${task.title}</strong>
+            <p>${task.description || ''}</p>
+            <span class="priority ${task.priority}">${task.priority}</span>
+            <span class="status ${task.status}">(${task.status})</span>
+            <div><small>Assigned to: ${task.assignedToName || 'N/A'}</small></div>
+            <div><small>Deadline: ${dueDate}</small></div>
+          </div>
+          <div>
+            <button onclick="toggleTaskStatus('${task.id}', '${task.status}')">✅ Toggle</button>
+            <button onclick="deleteTaskById('${task.id}')">❌ Delete</button>
+          </div>
+        `;
+        taskList.appendChild(li);
+      });
+    }
+
+    async function assignTask() {
+      const empEmail = document.getElementById("employeeName").value.trim();
+      const taskTitle = document.getElementById("taskInput").value.trim();
+      const deadline = document.getElementById("taskDeadline").value;
+      const priority = document.getElementById("taskPriority").value.toLowerCase();
+
+      if (empEmail === "" || taskTitle === "") {
+        alert('Please enter employee email and task title');
+        return;
+      }
+
+      // Find employee by email
+      const employee = employees.find(emp => emp.email === empEmail);
+      if (!employee) {
+        alert('Employee not found. Please enter a valid employee email.');
+        return;
+      }
+
+      const user = getUserData();
+      const userData = getUserData();
+      
+      const taskData = {
+        title: taskTitle,
+        description: '',
+        assignedTo: employee.id,
+        createdBy: user.id,
+        companyId: user.company.id,
+        dueDate: deadline || null,
+        priority: priority,
+        status: 'pending'
+      };
+
+      const result = await createTask(taskData);
+      
+      if (result.success) {
+        alert('Task assigned successfully!');
+        document.getElementById("employeeName").value = "";
+        document.getElementById("taskInput").value = "";
+        document.getElementById("taskDeadline").value = "";
+        document.getElementById("taskPriority").value = "Low";
+        loadTasks();
+      } else {
+        alert('Failed to assign task: ' + result.error);
+      }
+    }
+
+    async function toggleTaskStatus(taskId, currentStatus) {
+      let newStatus = 'pending';
+      if (currentStatus === 'pending') newStatus = 'in_progress';
+      else if (currentStatus === 'in_progress') newStatus = 'completed';
+      else if (currentStatus === 'completed') newStatus = 'pending';
+
+      const result = await updateTaskStatus(taskId, newStatus);
+      if (result.success) {
+        loadTasks();
+      } else {
+        alert('Failed to update task: ' + result.error);
+      }
+    }
+
+    async function deleteTaskById(taskId) {
+      if (!confirm('Are you sure you want to delete this task?')) return;
+      
+      const result = await deleteTask(taskId);
+      if (result.success) {
+        alert('Task deleted successfully');
+        loadTasks();
+      } else {
+        alert('Failed to delete task: ' + result.error);
+      }
+    }
+
+    async function exportPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFontSize(16);
+      doc.text("TaskSaathi - Task Report", 20, 20);
+
+      doc.setFontSize(12);
+      let y = 40;
+      tasks.forEach((task, i) => {
+        doc.text(
+          `${i + 1}. Employee: ${task.employee} | Task: ${task.name} | Status: ${task.status} | Priority: ${task.priority} | Deadline: ${task.deadline}`,
+          20,
+          y
+        );
+        y += 10;
+      });
+
+      doc.save("TaskSaathi_Report.pdf");
+    }
+
+    /* ===== Theme Toggle ===== */
+    const themeToggle = document.getElementById("themeToggle");
+    const body = document.body;
+
+    if (localStorage.getItem("theme") === "dark") {
+      body.classList.add("dark");
+      themeToggle.textContent = "☀️";
+    }
+
+    themeToggle.addEventListener("click", () => {
+      body.classList.toggle("dark");
+      if (body.classList.contains("dark")) {
+        localStorage.setItem("theme", "dark");
+        themeToggle.textContent = "☀️";
+      } else {
+        localStorage.setItem("theme", "light");
+        themeToggle.textContent = "🌙";
+      }
+    });
+
+    /* ===== Initial Load ===== */
+    loadEmployees();
+    loadTasks();
+
+    // Refresh data every 30 seconds
+    setInterval(() => {
+      loadEmployees();
+      loadTasks();
+    }, 30000);
+  </script>
+
+</body>
+</html>
